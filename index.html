@@ -512,7 +512,7 @@ th{font-size:12px;color:var(--muted);font-weight:500}
       <ol>
         <li><b>Opponent model.</b> Each bot reads its own hand like a person does (how close its high is to the nuts, which nut low it holds, which nut low draw) and then plays by its profile (hover a player's type at the table to see it):
           <ul>
-            <li><span class="ty-fish">Fish</span>: calling station. Always calls with the nut or 2nd-nut low, any flush, a nut flush draw or a wrap; calls most other draws and two pair; weaker pairs and lows about half the time; folds hands with nothing or only backdoors. Raises only with the nuts.</li>
+            <li><span class="ty-fish">Fish</span>: calling station. Never folds to a 3-bet preflop. Always calls with the nut or 2nd-nut low, any flush, a nut flush draw or a wrap; calls most other draws and two pair; weaker pairs and lows about half the time; folds hands with nothing or only backdoors. Raises only with the nuts.</li>
             <li><span class="ty-nit">Nit</span>: continues only with near-nut highs, the nut low, or a nut draw with a real high; folds a 2nd-nut low without a good high; always bets the river nuts.</li>
             <li><span class="ty-maniac">Maniac</span>: always calls with any flush, calls any flush or straight draw, bets and raises any piece, bluffs a lot, but folds pure air to a real bet.</li>
             <li><span class="ty-reg">Reg</span>: pot odds plus nut awareness; continues with nut lows, strong highs, nut flush draws, wraps and nut low draws; folds non-nut lows to heavy action and folds nothing.</li>
@@ -522,7 +522,7 @@ th{font-size:12px;color:var(--muted);font-weight:500}
         <li><b>Rollouts.</b> From every option you have (fold, call, pot), it plays the hand to the end against those hands, with the bots following their model and you continuing in the equity-driven <b>Aggro</b> style (below). The same cards are used for every option, so differences between options are measured precisely.</li>
         <li><b>Grade.</b> EV is the chips you win from this point in big blinds (fold = 0). Your choice is rated Best, Good (within noise), Inaccuracy (&lt;1.5bb lost), Mistake (&lt;4bb) or Blunder.</li>
       </ol>
-      <p><b>Preflop is judged on equity fundamentals, not the simulation.</b> The coach takes your equity against the players actually in the pot (anyone who has called or raised, with their ranges read from their actions; in an unopened pot, the blinds plus one more player if two or more are still to act behind you). It adjusts for position (button ×1.06, UTG and LJ ×0.94, small and big blind ×0.93, calibrated against the full simulation on a table of regs) and hand structure (mostly-high hands down to ×0.85 because they get freerolled and quartered; A-2/A-3 hands ×1.05), then plays out the rest of the preflop betting thousands of times with every opponent responding by their profile (folding, calling or re-raising), so raises earn their fold equity and calls pay for raises behind you. Hands that reach the flop are valued at realized equity against the players who actually continued. Explain shows every number, plus your head-to-head equity against a premium A-2-3-Q-T double-suited and against a random hand.</p>
+      <p><b>Preflop is judged by playing the hand out.</b> For each option (fold, limp or call, raise pot) the coach plays the rest of the hand thousands of times: opponents get hands that fit what they've done, everyone behind responds by their profile (folding, calling or re-raising), and you continue in the Aggro style. An earlier version estimated preflop EV from equity with position and table adjustments. Checked against hundreds of spots played out 600 times each, that formula over-rated 3-bets by about 6bb facing a raise (the table bonus gave weak hands credit for fish paying off) and under-rated opens by about 2bb. The play-out simulation was unbiased in both. Explain still shows your equity against the players in the pot and what happens after each option, plus your head-to-head equity against a premium A-2-3-Q-T double-suited and against a random hand.</p>
       <p>Postflop, because the coach knows how each type plays, it recommends exploiting them: value-bet fish thinner, fold to nits' raises, call down maniacs lighter. Turn off "Show player types" to practice without reads. Deeper coach settings run more rollouts and shrink the ± ranges.</p>
 
       <h3>The Aggro playbook: aggressive, but only where the equity is real</h3>
@@ -1440,6 +1440,8 @@ function policy(s, hand, type, rng, cache) {
       c = sig((pc - callT) / 0.035);
       // fish call a single raise with any ace in hi-lo
       if (type === 'fish' && lvl === 1 && s.hilo && hand.some(x => (x >> 2) === 12)) c = Math.max(c, 0.75);
+      // fish never fold to a 3-bet preflop (they call, or re-raise their best hands)
+      if (type === 'fish' && lvl === 2) c = 1;
     }
   } else {
     let nAct = 0; for (const q of s.players) if (!q.folded) nAct++;
@@ -2648,7 +2650,7 @@ const GRADES = {
   mistake: ['Mistake', '#f09a4a'], blunder: ['Blunder', '#ef6b6b'],
 };
 const TYPE_DESC = {
-  fish: 'Fish (calling station): limps a lot and usually calls a raise with any ace. Always calls with the nut or 2nd-nut low, any flush, a nut flush draw, a wrap, a good low draw, or a strong high; calls other flush draws 90% of the time and two pair 90%. Weaker pairs, lows and gutshots about half the time. Folds hands with nothing or only backdoors. Raises only with the nuts and rarely bluffs.',
+  fish: 'Fish (calling station): limps a lot, usually calls a raise with any ace, and never folds to a 3-bet preflop. Always calls with the nut or 2nd-nut low, any flush, a nut flush draw, a wrap, a good low draw, or a strong high; calls other flush draws 90% of the time and two pair 90%. Weaker pairs, lows and gutshots about half the time. Folds hands with nothing or only backdoors. Raises only with the nuts and rarely bluffs.',
   nit: 'Nit: plays few hands. Continues only with near-nut highs, the nut low, or a nut draw backed by a real high. Folds a 2nd-nut (or worse) low without a good high. Folds anything weak to a raise. Bets its strong hands and always bets the river nuts.',
   maniac: 'Maniac: raises a lot preflop. Always calls with any flush, calls any flush draw or straight draw, bets and raises any piece of the board, semi-bluffs draws, bluffs often. Still folds hands with nothing to a real bet.',
   reg: 'Reg: plays pot odds with nut awareness. Continues with the nut low, strong highs, nut flush draws, wraps and nut low draws; raises the nuts and scooping hands; gets away from non-nut lows facing heavy action; folds hands with nothing.',
@@ -2837,8 +2839,11 @@ function pfApply(d, r) {
   if (d.street !== 0 || !r.pf || !r.pf.ev || r.simEv) return;
   const pf = r.pf, callAmt = d.owe ? Math.min(d.owe, d.stack) : 0;
   r.simEv = r.ev; r.simBest = r.best;
-  r.ev = pf.ev; r.best = pf.best; r.seDiff = pf.seDiff;
-  r.pfm = { eq: pf.eq, eR: Math.min(0.95, pf.eq * pf.R), R: pf.R, adj: pf.adj, need: callAmt ? callAmt / (d.pot + callAmt) : 0,
+  // Grade preflop with the full simulation: checked against play-outs it is unbiased, while the equity formula
+  // over-rated 3-bets by about 6bb facing a raise (its table bonus credits weak hands) and under-rated opens by ~2bb.
+  const sim = true;
+  if (!sim) { r.ev = pf.ev; r.best = pf.best; r.seDiff = pf.seDiff; }
+  r.pfm = { sim, eq: pf.eq, eR: Math.min(0.95, pf.eq * pf.R), R: pf.R, adj: pf.adj, need: callAmt ? callAmt / (d.pot + callAmt) : 0,
     fair: 1 / (pf.k + 1), k: pf.k, seats: pf.seats, lo: pf.lo, scoop: pf.scoop, stats: pf.stats };
 }
 function pfApplyOld_unused(d, r) {
@@ -3200,7 +3205,9 @@ function explainHTML(d) {
     const adjTxt = pm.adj.length ? ` After adjusting for ${pm.adj.map(([t, f]) => `${t} (×${f.toFixed(2)})`).join(' and ')} you realize about <b>${P(pm.eR)}</b>.` : '';
     const tb = pm.stats && pm.stats[best] ? pm.stats[best].table : 1;
     const tableTxt = Math.abs(tb - 1) >= 0.02 ? ` Who sees the flop with you matters too: against these players your share is worth about ×${tb.toFixed(2)} (${tb > 1 ? 'fish and maniacs pay off strong hands' : 'tight players only pay off when they have you beat'}).` : '';
-    const base = `Against ${who2} you have <b>${P(pm.eq)}</b> equity.${adjTxt}${tableTxt}`;
+    const base = pm.sim
+      ? `Against ${who2} you have <b>${P(pm.eq)}</b> equity. The coach plays the hand out thousands of times against how these players really continue (calling, re-raising, folding) instead of estimating from equity.`
+      : `Against ${who2} you have <b>${P(pm.eq)}</b> equity.${adjTxt}${tableTxt}`;
     if (bA.t === 'f') {
       const cj = A.findIndex(a => a.t === 'c'), cs = cj >= 0 && pm.stats ? pm.stats[cj] : null;
       const crowd = cs && pm.eR >= pm.need && cs.flop > 0.05 && cs.callers > pm.k + 0.3
