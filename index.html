@@ -187,6 +187,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
   .pc.hc{width:36px;height:50px;border-radius:5px}.pc.hc .r{font-size:18px}.pc.hc .u{font-size:14px}
   .pc.bd{width:36px;height:51px}.pc.bd .r{font-size:18px}.pc.bd .u{font-size:15px}
   .seatbox.hero{padding:3px 6px}
+  .pcenter{top:55%}.pcenter .board{gap:4px}.pcenter .tsub{display:none}
   .pacts .btn,.pacts button{min-height:48px}
   #pExplain .kb,.pacts .kb{display:none}
   .mbox{max-height:calc(100dvh - 32px);padding:14px 14px 12px}
@@ -3070,7 +3071,7 @@ function renderPlay() {
     if (i === 0) minis = `<div class="herocards">${p.hand.map(c => cardHTML(c, 'hc')).join('')}</div>`;
     else if (!p.folded || reveal.has(i)) minis = `<div class="minis">${p.hand.map(c => cardHTML(reveal.has(i) ? c : 'back', 'mc')).join('')}</div>`;
     html += `<div class="${cls}" style="left:${x}%;top:${y}%"><div class="nm"><span class="ps">${posName(n, s.button, i)}</span>${nm}</div>${minis}<div class="st">${p.allin && !s.done ? 'ALL-IN' : fmt(p.stack)}</div><div class="la">${last}</div></div>`;
-    const bx = phone ? 50 + 33 * cx : 50 + 31 * cx, by = phone ? (i === 0 ? 72 : 50 + 27 * cy) : 50 + 25 * cy;
+    const bx = phone ? 50 + 27 * cx : 50 + 31 * cx, by = phone ? (i === 0 ? 72 : 50 + 27 * cy) : 50 + 25 * cy;
     if (s.done && won) html += `<div class="betchip won" style="left:${bx}%;top:${by}%">wins ${fmt(s.result.pay[i])}</div>`;
     else if (!s.done && p.bet > 0) html += `<div class="betchip" style="left:${bx}%;top:${by}%">${fmt(p.bet)}</div>`;
     if (i === s.button) {
@@ -3081,7 +3082,7 @@ function renderPlay() {
   }
   html += `<div class="pcenter"><div class="board">${[0, 1, 2, 3, 4].map(k => cardHTML(bd[k] ?? null, 'bd' + (bd !== s.board && k >= s.board.length ? ' ghost' : ''))).join('')}</div>` +
     (bd !== s.board && bd.length > s.board.length ? `<div class="hint" style="color:#f0d24a;margin:-2px 0 4px">dashed = run-out cards</div>` : '') +
-    `<div class="potlbl">Pot ${fmt(potTotal(s))}</div><div class="hint" style="color:#cfe6d7;margin-top:4px">${s.hilo ? 'Big O Hi-Lo 8/b' : 'Big O High'} · ${SB}/${BB} · ${st.stackBB}bb</div></div>`;
+    `<div class="potlbl">Pot ${fmt(potTotal(s))}</div><div class="hint tsub" style="color:#cfe6d7;margin-top:4px">${s.hilo ? 'Big O Hi-Lo 8/b' : 'Big O High'} · ${SB}/${BB} · ${st.stackBB}bb</div></div>`;
   $('pTableArea').innerHTML = html;
 
   const me = s.players[0];
