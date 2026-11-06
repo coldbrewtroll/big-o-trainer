@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Big O Trainer — Play &amp; Coach</title>
+<meta name="theme-color" content="#0f1512">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Big O">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 :root{
   --bg:#0f1512; --panel:#17201b; --panel2:#1e2a23; --line:#2b3a31; --text:#e8efe9; --muted:#93a59a;
@@ -157,6 +163,35 @@ th{font-size:12px;color:var(--muted);font-weight:500}
 .xlist li{margin:6px 0}
 #pExplain .kb{opacity:.55;font-size:11px;margin-left:6px}
 .pc.ghost{outline:2px dashed #f0d24a;outline-offset:1px;opacity:.85}
+/* ---------- iPhone / phone layout ---------- */
+.psettoggle{display:none}
+.ptip{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--panel2);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+@media (max-width:560px){
+  html{-webkit-text-size-adjust:100%}
+  .wrap{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  select,input{font-size:16px!important} /* no zoom-in when a menu is tapped */
+  .psettoggle{display:inline-flex;align-items:center;gap:6px}
+  .psettings:not(.open) > label{display:none}
+  .psettings{gap:8px}
+  .playgrid{display:flex!important;flex-direction:column;gap:0}
+  .playgrid > div{display:contents}
+  .playgrid .ptable{order:1}.playgrid .herobar{order:2}.playgrid #pResultCard{order:3}.playgrid .coachcard{order:4}
+  .playgrid .flowcard{order:5}.playgrid .logcard{order:6}.playgrid .sesscard{order:7}
+  .ptable{height:auto;aspect-ratio:0.62;max-height:640px;border-radius:46%/36%;border-width:7px}
+  .seatbox{min-width:0;max-width:96px;font-size:10px!important;padding:2px 4px;border-radius:8px;line-height:1.2}
+  .seatbox .ps{font-size:9px;padding:0 3px}
+  .seatbox .la{font-size:10px;min-height:12px}
+  .pc.mc{width:12px;height:17px;border-radius:2px}.pc.mc .r{font-size:8px}.pc.mc .u{font-size:7px}
+  .minis .pc.mc:not(.back){width:17px;height:24px}.minis .pc.mc:not(.back) .r{font-size:10px}.minis .pc.mc:not(.back) .u{font-size:8px}
+  .pc.hc{width:36px;height:50px;border-radius:5px}.pc.hc .r{font-size:18px}.pc.hc .u{font-size:14px}
+  .pc.bd{width:36px;height:51px}.pc.bd .r{font-size:18px}.pc.bd .u{font-size:15px}
+  .seatbox.hero{padding:3px 6px}
+  .pacts .btn,.pacts button{min-height:48px}
+  #pExplain .kb,.pacts .kb{display:none}
+  .mbox{max-height:calc(100dvh - 32px);padding:14px 14px 12px}
+}
+
 .seatbox.rofold{opacity:.85;border-style:dashed}
 .rohead{margin-top:16px;padding-top:10px;border-top:1px dashed var(--line);font-weight:700;color:#f0d24a}
 .potdiv{margin-top:10px;background:var(--panel2);border-radius:10px;padding:10px}
@@ -278,8 +313,10 @@ th{font-size:12px;color:var(--muted);font-weight:500}
 
   <!-- ============ PLAY & COACH ============ -->
   <section class="panel on" id="p-play">
+    <div class="ptip" id="pTip" hidden></div>
     <div class="modal" id="pModal" hidden><div class="mbox" role="dialog" aria-label="Explain"><button class="mx" id="pModalX" aria-label="Close">×</button><div id="pModalBody"></div></div></div>
-    <div class="card row">
+    <div class="card row psettings" id="pSettings">
+      <button class="btn psettoggle" id="pSetToggle" type="button" aria-expanded="false">Settings</button>
       <label class="ctl">Players
         <select id="pN"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option selected>7</option></select>
       </label>
@@ -326,12 +363,12 @@ th{font-size:12px;color:var(--muted);font-weight:500}
           <div id="pResult"></div>
           <div class="row" style="margin-top:10px"><button class="btn primary" id="pNext">Next hand ⏎</button></div>
         </div>
-        <div class="card"><b>Hand log</b><div class="plog" id="pLog"></div></div>
+        <div class="card logcard"><b>Hand log</b><div class="plog" id="pLog"></div></div>
       </div>
       <div>
-        <div class="card"><div class="row" style="justify-content:space-between"><b>Hand flow</b><span class="hint">gold = your choice · ★ best</span></div><div class="pflow" id="pFlow"></div></div>
-        <div class="card"><div class="row" style="justify-content:space-between"><b>Coach</b><span class="hint">5/10 · pot limit</span></div><div id="pCoachBox" style="margin-top:8px"></div></div>
-        <div class="card">
+        <div class="card flowcard"><div class="row" style="justify-content:space-between"><b>Hand flow</b><span class="hint">gold = your choice · ★ best</span></div><div class="pflow" id="pFlow"></div></div>
+        <div class="card coachcard"><div class="row" style="justify-content:space-between"><b>Coach</b><span class="hint">5/10 · pot limit</span></div><div id="pCoachBox" style="margin-top:8px"></div></div>
+        <div class="card sesscard">
           <div class="row" style="justify-content:space-between"><b>Session</b><button class="btn" id="pReset" style="padding:4px 10px;font-size:12px">Reset</button></div>
           <div class="stats" id="pSess" style="margin-top:8px"></div>
           <div class="gradebar" id="pGrades"></div>
@@ -2986,6 +3023,19 @@ function potDivHTML(name, pot, hands, s, hypo, single) {
 
 // Only touch the DOM when the markup changes, so buttons aren't replaced mid-click.
 function setHTML(el, h) { if (el._h !== h) { el._h = h; el.innerHTML = h; } }
+const PHONE_MQ = window.matchMedia ? window.matchMedia('(max-width:560px)') : null;
+const isPhone = () => !!(PHONE_MQ && PHONE_MQ.matches);
+if (PHONE_MQ && PHONE_MQ.addEventListener) PHONE_MQ.addEventListener('change', () => { if (PL.s) renderPlay(); });
+// Settings fold away on a phone; tapping a player's type explains the profile (no hover on touch screens)
+$('pSetToggle').onclick = () => { const o = $('pSettings').classList.toggle('open'); $('pSetToggle').setAttribute('aria-expanded', o); };
+let tipTimer = null;
+document.addEventListener('click', e => {
+  const t = e.target.closest('#pTableArea [title]');
+  if (!t || !isPhone()) return;
+  $('pTip').textContent = t.getAttribute('title'); $('pTip').hidden = false;
+  clearTimeout(tipTimer); tipTimer = setTimeout(() => { $('pTip').hidden = true; }, 6000);
+});
+$('pTip').onclick = () => { $('pTip').hidden = true; };
 function renderPlay() {
   const s = PL.s, st = pset(), n = s.n;
   const reveal = new Set();
@@ -2995,13 +3045,16 @@ function renderPlay() {
   }
   const bd = s.done && PL.runout ? PL.runout.board : s.board;
   let html = '';
+  // On a phone the table is a tall oval: you sit at the bottom and the others spread over the top three-quarters,
+  // so your cards never cover a neighbour.
+  const phone = isPhone();
   const coords = i => {
-    const th = (90 + i * 360 / n) * Math.PI / 180;
+    const th = (phone ? (i === 0 ? 90 : n === 2 ? 270 : 90 + 62 + (i - 1) * (236 / (n - 2))) : 90 + i * 360 / n) * Math.PI / 180;
     return [Math.cos(th), Math.sin(th)];
   };
   for (let i = 0; i < n; i++) {
     const p = s.players[i], [cx, cy] = coords(i);
-    const x = 50 + 42 * cx, y = 50 + 39 * cy;
+    const x = phone ? 50 + (i === 0 ? 0 : 40) * cx : 50 + 42 * cx, y = phone ? (i === 0 ? 87 : 50 + 41 * cy) : 50 + 39 * cy;
     const won = s.done && s.result.pay[i] > 0;
     const cls = ['seatbox', i === 0 ? 'hero' : '', s.toAct === i ? 'act' : '', p.folded ? (i === 0 ? 'herofold' : reveal.has(i) ? 'rofold' : 'folded') : '', won ? 'win' : ''].join(' ');
     let last = '';
@@ -3017,12 +3070,13 @@ function renderPlay() {
     if (i === 0) minis = `<div class="herocards">${p.hand.map(c => cardHTML(c, 'hc')).join('')}</div>`;
     else if (!p.folded || reveal.has(i)) minis = `<div class="minis">${p.hand.map(c => cardHTML(reveal.has(i) ? c : 'back', 'mc')).join('')}</div>`;
     html += `<div class="${cls}" style="left:${x}%;top:${y}%"><div class="nm"><span class="ps">${posName(n, s.button, i)}</span>${nm}</div>${minis}<div class="st">${p.allin && !s.done ? 'ALL-IN' : fmt(p.stack)}</div><div class="la">${last}</div></div>`;
-    const bx = 50 + 31 * cx, by = 50 + 25 * cy;
+    const bx = phone ? 50 + 33 * cx : 50 + 31 * cx, by = phone ? (i === 0 ? 72 : 50 + 27 * cy) : 50 + 25 * cy;
     if (s.done && won) html += `<div class="betchip won" style="left:${bx}%;top:${by}%">wins ${fmt(s.result.pay[i])}</div>`;
     else if (!s.done && p.bet > 0) html += `<div class="betchip" style="left:${bx}%;top:${by}%">${fmt(p.bet)}</div>`;
     if (i === s.button) {
       const [dx, dy] = coords(i + 0.33);
-      html += `<div class="dealer" style="left:${50 + 36 * dx}%;top:${50 + 32 * dy}%">D</div>`;
+      html += phone ? `<div class="dealer" style="left:${i === 0 ? 72 : 50 + 30 * dx}%;top:${i === 0 ? 84 : 50 + 35 * dy}%">D</div>`
+        : `<div class="dealer" style="left:${50 + 36 * dx}%;top:${50 + 32 * dy}%">D</div>`;
     }
   }
   html += `<div class="pcenter"><div class="board">${[0, 1, 2, 3, 4].map(k => cardHTML(bd[k] ?? null, 'bd' + (bd !== s.board && k >= s.board.length ? ' ghost' : ''))).join('')}</div>` +
@@ -3828,6 +3882,13 @@ newTable(); renderSess(); renderCoach();
 quizNew(); renderQuizScore();
 matchNew(); renderMatchScore();
 renderCalc();
+</script>
+<script>
+// Installable app (Add to Home Screen) when served from the website; nothing to do for the desktop app or a local file.
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && (/github\.io$/.test(location.hostname) || location.hostname === 'localhost')) {
+  const l = document.createElement('link'); l.rel = 'manifest'; l.href = 'manifest.webmanifest'; document.head.appendChild(l);
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
 </script>
 </body>
 </html>
