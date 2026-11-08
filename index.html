@@ -340,7 +340,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
         <select id="pDealMin"><option value="0">All hands</option><option value="0.4">Top 60%</option><option value="0.5" selected>Top 50%</option><option value="0.6">Top 40%</option></select>
       </label>
       <label class="ctl">Units
-        <select id="pUnits"><option value="chips" selected>Chips</option><option value="bb">Big blinds</option></select>
+        <select id="pUnits"><option value="chips" selected>Chips</option><option value="bb">Big blinds</option><option value="usd">$ at 2/4</option></select>
       </label>
       <label class="ctl chk"><input type="checkbox" id="pTypes" checked> Show player types</label>
       <label class="ctl chk"><input type="checkbox" id="pAuto"> Auto-deal</label>
@@ -2745,6 +2745,7 @@ const pset = () => ({
 });
 function fmt(x) {
   if ($('pUnits').value === 'bb') return (Math.round(x / BB * 10) / 10).toLocaleString() + 'bb';
+  if ($('pUnits').value === 'usd') { const d = x / BB * 4; return '$' + (Math.round(d * 10) / 10).toLocaleString(); } // 1bb = $4 at 2/4
   return Math.round(x).toLocaleString();
 }
 const fmtBB = x => (x >= 0 ? '+' : '') + x.toFixed(1) + 'bb';
@@ -3437,6 +3438,16 @@ $('pFlow').onclick = e => {
 $('pNext').onclick = dealHand;
 $('pNewTable').onclick = newTable;
 ['pN', 'pStack', 'pTable'].forEach(id => $(id).onchange = newTable);
+// Remember the table settings between visits (this browser only)
+const SET_IDS = ['pN', 'pStack', 'pTable', 'pCoach', 'pWhen', 'pSpeed', 'pDealMin', 'pUnits', 'pTypes', 'pAuto', 'pRunout'];
+function saveSettings() { try { const o = {}; SET_IDS.forEach(id => { const e = $(id); if (e) o[id] = e.type === 'checkbox' ? e.checked : e.value; }); localStorage.setItem('bigoSettings', JSON.stringify(o)); } catch (e) {} }
+function loadSettings() {
+  try {
+    const o = JSON.parse(localStorage.getItem('bigoSettings') || 'null'); if (!o) return;
+    SET_IDS.forEach(id => { const e = $(id); if (!e || !(id in o)) return; if (e.type === 'checkbox') e.checked = !!o[id]; else if ([...e.options].some(x => x.value === String(o[id]))) e.value = o[id]; });
+  } catch (e) {}
+}
+SET_IDS.forEach(id => { const e = $(id); if (e) e.addEventListener('change', saveSettings); });
 ['pUnits', 'pTypes'].forEach(id => $(id).onchange = () => { renderPlay(); renderCoach(); renderSess(); if (PL.s.done) $('pResult').innerHTML = resultHTML(PL.s); });
 $('pWhen').onchange = () => { if (PL.cur && $('pWhen').value === 'before') { PL.focus = PL.cur; renderCoach(); } renderPlay(); };
 $('pReset').onclick = () => { store.play = newSess(); PL.decisions = []; PL.focus = null; save(); renderSess(); renderCoach(); renderPlay(); };
@@ -3879,7 +3890,7 @@ document.addEventListener('keydown', e => {
   if ($('p-quiz').classList.contains('on')) { e.preventDefault(); Q.revealed ? quizNew() : quizLock(); }
   else if ($('p-match').classList.contains('on') && M.done) { e.preventDefault(); matchNew(); }
 });
-newTable(); renderSess(); renderCoach();
+loadSettings(); newTable(); renderSess(); renderCoach();
 quizNew(); renderQuizScore();
 matchNew(); renderMatchScore();
 renderCalc();
