@@ -557,7 +557,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
   <section class="panel" id="p-sheet">
     <div class="card prose sheet">
       <h3 style="margin-top:0">Your 2/4 game</h3>
-      <p class="hint" style="margin-top:-4px">$2/$4 · $400 buy-in (100bb) · 6&ndash;7 handed · mostly solid regulars · no rake. Built from 40 million simulated hands of this game: a leak scan replayed one decision per hand both ways, and every rule below won head-to-head against the version without it. The opponents are the trainer's bots, so treat the numbers as guides, not promises.</p>
+      <p class="hint" style="margin-top:-4px">$2/$4 · $400 buy-in (100bb) · 6&ndash;7 handed · mostly solid regulars · no rake. Built from 50 million simulated hands of this game: a leak scan replayed one decision per hand both ways, and every rule below won head-to-head against the version without it. The opponents are the trainer's bots, so treat the numbers as guides, not promises.</p>
       <h4>Hand checker</h4>
       <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">
         <input id="shHand" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. As 2s 3d Qd Th" style="flex:1;min-width:200px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2)">
@@ -608,7 +608,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
       <ul>
         <li><b>Strong hands: bet or raise pot, every time.</b> The nuts, near-nut highs, the nut low with a decent high, scoop hands. Never half pot when you raise a bet.</li>
         <li><b>Stack 1&times; the pot or less: get it in</b> with any hand worth continuing. River exception: only with a strong high or the nut low; with a medium high, just call.</li>
-        <li><b>Raised on the flop</b> with a hand worth continuing (stack up to 3&times; the pot): re-raise, don't call.</li>
+        <li><b>Facing a flop bet or raise</b> with a hand worth continuing (stack up to 3&times; the pot): raise, don't just call.</li>
         <li><b>Nut low draws on the flop: never fold them.</b> Raise them about half the time against one bet. A nut flush draw with a low draw also continues against a raise.</li>
         <li><b>River nut low:</b> bet pot when first, raise when facing a bet.</li>
         <li><b>Heads-up flop, first to act with a weak hand:</b> bet about 60% of the time.</li>
@@ -667,7 +667,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
           </ul></li>
         <li><b>Preflop, first in: limp, don't raise.</b> A 10-million-hand leak scan of a 2/4, 100bb, 6&ndash;7-handed game against mostly solid regulars found open-raising pot was the single biggest leak, in every seat and with every hand strength, even the top 5%. Limping almost every hand (raising about 5% of the time) was worth +10bb/100: it keeps worse hands in multiway pots where your strong hands get paid, while a pot raise mostly folds them out. Against regs and nits, play a reg's range; with fish and maniacs at the table, open up to about 24 percentile points looser. Never fold a top-25% hand in an unopened or limped pot, and from the big blind in a limped pot raise your top 10%. Facing a raise: never fold your top 20%, 3-bet your top 10% of hands (except against a maniac, where you just call), call wider against fish and a little wider against nits, and don't 3-bet light. Facing a 3-bet, never fold a top-10% hand.</li>
         <li><b>Short stack behind (1&times; the pot or less): get it in.</b> With any hand worth continuing, bet or raise instead of checking or calling (+9.5bb/100). Not at 1.5&times; the pot, though: that lost 5bb/100.</li>
-        <li><b>Raised on the flop with a hand worth continuing (stack up to 3&times; the pot): re-raise, don't just call.</b> Getting the money in beats calling and facing another big bet on the turn. But never shove the river with junk just because the stack is short.</li>
+        <li><b>Facing a flop bet or raise with a hand worth continuing (stack up to 3&times; the pot): raise, don't just call.</b> Getting the money in beats calling and facing another big bet on the turn. But never shove the river with junk just because the stack is short.</li>
         <li><b>Turn, facing a bet with a weak high and a weak (non-nut) low and no draw: fold.</b> These hands lose to the hands that bet (+0.6bb/100).</li>
         <li><b>Nut low draws on the flop: never fold them, and raise them about half the time</b> against a single bet (+4bb/100). A nut flush draw with a low draw also keeps going against a raise (+1.3bb/100).</li>
         <li><b>River nut low: raise it when you face a bet, and bet pot when you're first.</b> You can't lose your half, and they pay (+1.7bb/100 together).</li>
@@ -1374,7 +1374,7 @@ const AGGRO = { value: 1, valueFreq: 1, semi: 1, semiFreq: 0.95, swing: 1, swing
   nlDrawVsNit: 0, semiHUOnly: 0, lowSprRaiseSprFlop: 2, huFlopStab: 1, huFlopStabFreq: 0.6, nlDrawNoFold: 1, nlDrawRaise: 1, nlDrawRaiseFreq: 0.5, nfdLowVsRaise: 1,
   riverNutLowRaise: 1, riverNutLowRaiseFreq: 0.8, lowSprCommit: 1, commitSpr: 1, commitNeedsHand: 0, commitNeedsHandRiver: 1, flopRaiseCommit: 1, flopRaiseCommitSpr: 3, nutNoLoFlopCall: 0, nutNoLoFlopRaise: 0.3,
   premCall3b: 1, prem3bet: 1, prem3betFreq: 0.6, premLimp: 1,
-  nitSmallFlopOnly: 0, raisePot: 1, riverMedHalf: 0, riverNutLowPot: 1, riverCommitStrict: 1, maniacRaiseCall: 1, premCallRaise: 1, bbRaisePrem: 1, bbRaisePc: 0.9, bbRaiseFreq: 0.8, flopSprBetAll: 0, turnWeakFold: 1, flopWeakFold: 0, premLimpPc: 0.75, trapRiver: 1, nitSmallValue: 1, nitValueShare: 0,
+  nitSmallFlopOnly: 0, raisePot: 1, riverMedHalf: 0, riverNutLowPot: 1, riverCommitStrict: 1, maniacRaiseCall: 1, premCallRaise: 1, bbRaisePrem: 1, bbRaisePc: 0.9, bbRaiseFreq: 0.8, flopSprBetAll: 0, turnWeakFold: 1, flopWeakFold: 0, premLimpPc: 0.75, posAwareOpen: 1, stealBand: 0, stealWidth: 0.25, flopBetCommit: 1, noFlatLowSpr: 0, trapRiver: 1, nitSmallValue: 1, nitValueShare: 0,
   fishBigMedium: 0, fishMedShare: 0.8, maniacSmallValue: 0, maniacValueShare: 0.3, pfVsManiac: 0, pfVsNit: -0.08, pfVsFish: 0.08, pf3Maniac: -0.1,
   noRelRaise: 1, noRelBet: 1, relBetFloor: 0, shortBB: 40, shortRelRaise: 1, lowSprHiShort: 0.6, swingDown: 0, swingDownMin: 0.1, swingDownCall: 1.25 };
 function postflopProfile(type, o) {
@@ -1488,6 +1488,8 @@ function aggroProfile(o, base) {
   if (A.turnWeakFold && (street === 2 || (A.flopWeakFold && street === 1)) && hiQ <= 0.15 && loQ > 0 && loQ < 0.8 && !fd && sd < 3 && drawQ < 0.6) c = Math.min(c, 0.1);
   if (A.maniacRaiseCall && street === 2 && raises >= 2 && o.aggType === 'maniac' && nAct === 2 && hiQ >= 0.4) c = Math.max(c, 0.9);
   if (A.lowSprCommit && o.spr != null && o.spr <= A.commitSpr && c >= 0.5 && (!(A.commitNeedsHand || (A.commitNeedsHandRiver && river)) || realHand)) r = Math.max(r, 0.9);
+  if (A.noFlatLowSpr && o.spr != null && o.spr <= A.commitSpr && (!river || realHand)) r = Math.max(r, c); // at low SPR, continuing means getting it in
+  if (A.flopBetCommit && street === 1 && raises === 1 && o.spr != null && o.spr <= A.flopRaiseCommitSpr && c >= 0.5 && realHand) r = Math.max(r, 0.9);
   if (A.flopRaiseCommit && street === 1 && raises >= 2 && o.spr != null && o.spr <= A.flopRaiseCommitSpr && c >= 0.5 && realHand) r = Math.max(r, 0.9);
   if (A.nutNoLoFlopCall && street === 1 && hiQ === 1 && loQ === 0 && raises === 1) r = Math.min(r, A.nutNoLoFlopRaise);
   if (A.nutLoDraw && !river && drawQ >= 0.6 && need <= A.nutLoDrawNeed && !(A.nlDrawVsNit && o.aggType === 'nit' && raises >= 2) && (street === 1 || raises === 1 || (A.nlDrawTurnRaise && (!A.nlTurnRaiseHi || hiQ >= 0.4 || fd)))) c = Math.max(c, 0.9);
@@ -1567,6 +1569,11 @@ function policy(s, hand, type, rng, cache) {
         r = strong * T.aggrPre;
         const limpT = openT - 0.10 - 0.30 * T.limp - (isSB ? 0.08 : 0);
         const limpP = Math.min(1, sig((pc - limpT) / 0.04) * (T.limp + (isSB ? 0.35 : 0) + 0.1));
+        if (type === 'aggro' && AGGRO.posAwareOpen) {
+          // first in: limp what you play; raise only to steal from the button or small blind with the hands below the limp line
+          const pos = posName(s.n, s.button, seat), steal = (pos === 'BTN' || pos === 'SB') && pc < openT + AGGRO.stealBand;
+          r = steal ? sig((pc - (openT - AGGRO.stealWidth)) / 0.03) : 0;
+        }
         c = r >= 1 ? 1 : (strong * (1 - T.aggrPre) + (1 - strong) * limpP) / (1 - r);
         if (type === 'aggro' && AGGRO.premLimp && pc >= AGGRO.premLimpPc) c = 1; // never fold a top-25% hand in an unopened or limped pot
       }
