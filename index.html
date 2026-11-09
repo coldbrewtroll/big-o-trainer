@@ -163,6 +163,17 @@ th{font-size:12px;color:var(--muted);font-weight:500}
 .xlist li{margin:6px 0}
 #pExplain .kb{opacity:.55;font-size:11px;margin-left:6px}
 .pc.ghost{outline:2px dashed #f0d24a;outline-offset:1px;opacity:.85}
+/* ---------- cheat sheet ---------- */
+.sheet h4{margin:16px 0 6px;font-size:15px}
+.sheet .tw{overflow-x:auto;margin:6px 0 10px}
+.sheet table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+.sheet th,.sheet td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.sheet th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.shout{margin-top:12px}
+.shout .big{font-size:22px;font-weight:700;margin:4px 0}
+@media (max-width:560px){.sheet table{min-width:0;font-size:13px}.sheet th,.sheet td{padding:6px 5px}.sheet th{font-size:11px;letter-spacing:.2px}}
+.shout .act{font-weight:700}.shout .act.L{color:var(--accent)}.shout .act.R{color:var(--warn)}.shout .act.F{color:var(--bad)}.shout .act.C{color:var(--blue)}
+
 /* ---------- iPhone / phone layout ---------- */
 .psettoggle{display:none}
 .ptip{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--panel2);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45;box-shadow:0 8px 30px rgba(0,0,0,.6)}
@@ -309,6 +320,7 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
     <button class="tab" data-tab="match">Matchup</button>
     <button class="tab" data-tab="calc">Calculator</button>
     <button class="tab" data-tab="solver">Solver</button>
+    <button class="tab" data-tab="sheet">2/4 cheat sheet</button>
     <button class="tab" data-tab="about">How it works</button>
   </nav>
 
@@ -542,6 +554,76 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
   </section>
 
   <!-- ============ ABOUT ============ -->
+  <section class="panel" id="p-sheet">
+    <div class="card prose sheet">
+      <h3 style="margin-top:0">Your 2/4 game</h3>
+      <p class="hint" style="margin-top:-4px">$2/$4 · $400 buy-in (100bb) · 6&ndash;7 handed · mostly solid regulars · no rake. Built from 40 million simulated hands of this game: a leak scan replayed one decision per hand both ways, and every rule below won head-to-head against the version without it. The opponents are the trainer's bots, so treat the numbers as guides, not promises.</p>
+      <h4>Hand checker</h4>
+      <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="shHand" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. As 2s 3d Qd Th" style="flex:1;min-width:200px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2)">
+        <button class="btn primary" id="shGo" type="button">Check</button>
+      </div>
+      <div id="shOut" class="shout" aria-live="polite"><span class="hint">Type your five cards (rank then suit: A K Q J T 9&hellip;2 and s h d c) to see where the hand ranks and what to do from each seat.</span></div>
+    </div>
+
+    <div class="card prose sheet">
+      <h3 style="margin-top:0">Before the flop</h3>
+      <h4>First in (everyone folded to you)</h4>
+      <p>Against solid players, <b>limp, don't raise</b>: in every early and middle seat a limp earned more than a pot raise, even with the best hands. Raise only to steal from the button and small blind.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Seat</th><th>7-handed</th><th>6-handed</th></tr></thead>
+        <tbody>
+          <tr><td>UTG</td><td>limp top 30%, fold the rest</td><td>limp top 35%, fold the rest</td></tr>
+          <tr><td>LJ</td><td>limp top 30%, fold the rest</td><td>&mdash;</td></tr>
+          <tr><td>HJ</td><td>limp top 35%, fold the rest</td><td>limp top 35%, fold the rest</td></tr>
+          <tr><td>CO</td><td>limp top 45%, fold the rest</td><td>limp top 45%, fold the rest</td></tr>
+          <tr><td>BTN</td><td>limp top 45%, <b>raise</b> everything else</td><td>limp top 40%, <b>raise</b> everything else</td></tr>
+          <tr><td>SB</td><td><b>raise</b> everything (top 5%: limp or raise)</td><td><b>raise</b> everything (top 5%: limp or raise)</td></tr>
+        </tbody></table></div>
+      <p>With limpers in front, never fold a top-25% hand. From the big blind in a limped pot, raise your top 10%.</p>
+      <h4>Facing a raise</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Raiser</th><th>Top 10%</th><th>Top 10&ndash;35%</th><th>Top 35&ndash;50%</th></tr></thead>
+        <tbody>
+          <tr><td>Reg</td><td><b>3-bet</b></td><td>call</td><td>fold</td></tr>
+          <tr><td>Nit</td><td><b>3-bet</b></td><td>call</td><td>fold</td></tr>
+          <tr><td>Maniac</td><td>call</td><td>call</td><td>call</td></tr>
+          <tr><td>You're in the big blind</td><td><b>3-bet</b></td><td>call</td><td>call</td></tr>
+        </tbody></table></div>
+      <p>Never fold your top 20% to a single raise. <b>Facing a 3-bet, never fold your top 10%.</b> Don't 3-bet light, and don't 3-bet a maniac at all: their raising range is wide, so calling earns 3&ndash;4bb more.</p>
+      <h4>What the bands look like</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Band</th><th>Typical hands</th></tr></thead>
+        <tbody>
+          <tr><td>Top 10%</td><td>Almost all have an ace with a 2 or 3, usually with a suited ace (A&clubs; 2&clubs; 3&diams; K&diams; 4&spades;)</td></tr>
+          <tr><td>10&ndash;20%</td><td>Mostly A-2/A-3, or an ace with three wheel cards (A&clubs; J&diams; 7&hearts; 6&clubs; 5&diams;)</td></tr>
+          <tr><td>20&ndash;35%</td><td>Double-suited connected low hands, often without A-2/A-3 (T&spades; 7&diams; 6&hearts; 3&hearts; 2&diams;)</td></tr>
+          <tr><td>35&ndash;50%</td><td>Double-suited but disconnected or mostly high (Q&hearts; T&clubs; 7&hearts; 6&clubs; 5&spades;, K&spades; Q&hearts; T&clubs; 9&spades; 4&hearts;)</td></tr>
+          <tr><td>Bottom 50%</td><td>Rainbow high-only hands and dangler-heavy junk (K&clubs; J&diams; T&hearts; 8&spades; 4&hearts;): fold. The trainer skips these.</td></tr>
+        </tbody></table></div>
+    </div>
+
+    <div class="card prose sheet">
+      <h3 style="margin-top:0">After the flop</h3>
+      <ul>
+        <li><b>Strong hands: bet or raise pot, every time.</b> The nuts, near-nut highs, the nut low with a decent high, scoop hands. Never half pot when you raise a bet.</li>
+        <li><b>Stack 1&times; the pot or less: get it in</b> with any hand worth continuing. River exception: only with a strong high or the nut low; with a medium high, just call.</li>
+        <li><b>Raised on the flop</b> with a hand worth continuing (stack up to 3&times; the pot): re-raise, don't call.</li>
+        <li><b>Nut low draws on the flop: never fold them.</b> Raise them about half the time against one bet. A nut flush draw with a low draw also continues against a raise.</li>
+        <li><b>River nut low:</b> bet pot when first, raise when facing a bet.</li>
+        <li><b>Heads-up flop, first to act with a weak hand:</b> bet about 60% of the time.</li>
+        <li><b>Turn, facing a bet with a weak high and a weak low:</b> fold.</li>
+        <li><b>Fold more on the river:</b> river bets from solid players are mostly real.</li>
+        <li><b>Press equity swings:</b> if the card jumped your equity and you now hold a strong high or the nut low, bet.</li>
+      </ul>
+      <h4>Who's in the pot</h4>
+      <ul>
+        <li><b>Fish:</b> never bluff when one is in the pot, and don't value-bet medium hands into them. Respect a fish's bet.</li>
+        <li><b>Maniac:</b> call down lighter, trap your strong hands by checking when they act after you, and bet pot (not small) for value.</li>
+        <li><b>Nit:</b> respect their bets. When only nits are left, bet, and size value bets at &frac12; pot.</li>
+      </ul>
+    </div>
+  </section>
   <section class="panel" id="p-about">
     <div class="card prose">
       <h3 style="margin-top:0">Play &amp; Coach: what the coach is (and isn't)</h3>
@@ -3925,6 +4007,45 @@ document.addEventListener('keydown', e => {
   if ($('p-quiz').classList.contains('on')) { e.preventDefault(); Q.revealed ? quizNew() : quizLock(); }
   else if ($('p-match').classList.contains('on') && M.done) { e.preventDefault(); matchNew(); }
 });
+
+// ================= 2/4 CHEAT SHEET: hand checker =================
+function shParse(txt) {
+  const t = txt.replace(/10/g, 'T').replace(/[^2-9tjqkaTJQKA shdcSHDC♠♥♦♣]/g, ' ').replace(/♠/g, 's').replace(/♥/g, 'h').replace(/♦/g, 'd').replace(/♣/g, 'c');
+  const m = t.replace(/\s+/g, '').match(/[2-9tjqka][shdc]/gi);
+  if (!m || m.length !== 5) return { err: 'Enter exactly five cards, like As 2s 3d Qd Th.' };
+  const cards = m.map(x => parseCard(x[0].toUpperCase() + x[1].toLowerCase()));
+  if (new Set(cards).size !== 5) return { err: 'The same card appears twice.' };
+  return { cards };
+}
+function shAdvice(top) { // top = percent of hands this one beats from the top (0 = best)
+  const weak = top > 50; // your rule: the bottom half is always a fold
+  const fi = (cut, steal) => top <= cut ? ['L', 'limp'] : steal && !weak ? ['R', 'raise'] : ['F', 'fold'];
+  const sb = top <= 5 ? ['L', 'limp or raise'] : weak ? ['F', 'fold'] : ['R', 'raise'];
+  const vs = kind => kind === 'maniac' ? (top <= 50 ? ['C', 'call'] : ['F', 'fold']) : top <= 10 ? ['R', '3-bet'] : top <= 35 ? ['C', 'call'] : kind === 'bb' && top <= 50 ? ['C', 'call'] : ['F', 'fold'];
+  return {
+    first7: [['UTG', fi(30)], ['LJ', fi(30)], ['HJ', fi(35)], ['CO', fi(45)], ['BTN', fi(45, true)], ['SB', sb]],
+    first6: [['UTG', fi(35)], ['HJ', fi(35)], ['CO', fi(45)], ['BTN', fi(40, true)], ['SB', sb]],
+    raise: [['a reg', vs('reg')], ['a nit', vs('nit')], ['a maniac', vs('maniac')], ['you in the BB', vs('bb')]],
+    threebet: top <= 10 ? ['C', 'never fold: call or 4-bet'] : ['F', 'usually fold'],
+  };
+}
+function shCheck() {
+  const p = shParse($('shHand').value);
+  if (p.err) { $('shOut').innerHTML = `<span class="badc">${p.err}</span>`; return; }
+  const pc = prePct(p.cards, true), top = Math.max(0, Math.round((1 - pc) * 1000) / 10);
+  const a = shAdvice(top);
+  const cell = ([k, t]) => `<span class="act ${k}">${t}</span>`;
+  const rows = list => list.map(([seat, x]) => `<tr><td>${seat}</td><td>${cell(x)}</td></tr>`).join('');
+  const band = top <= 10 ? 'premium: almost always an ace with a 2 or 3' : top <= 20 ? 'strong: usually A-2/A-3 or an ace with wheel cards' : top <= 35 ? 'playable: double-suited low hands' : top <= 50 ? 'marginal: late seats only' : 'weak: always a fold by your bottom-50% rule (a button or small-blind steal is only break-even)';
+  $('shOut').innerHTML = `<div class="spotline">${cardsHTML(sortHand(p.cards), 'mc')}</div>` +
+    `<div class="big">Top ${top <= 0.1 ? '0.1' : top.toFixed(top < 10 ? 1 : 0)}% of starting hands</div><div class="hint">${band}</div>` +
+    `<h4>First in, 7-handed</h4><div class="tw"><table><tbody>${rows(a.first7)}</tbody></table></div>` +
+    `<h4>First in, 6-handed</h4><div class="tw"><table><tbody>${rows(a.first6)}</tbody></table></div>` +
+    `<h4>Facing a raise from&hellip;</h4><div class="tw"><table><tbody>${rows(a.raise)}</tbody></table></div>` +
+    `<h4>Facing a 3-bet</h4><p>${cell(a.threebet)}</p>`;
+}
+$('shGo').onclick = shCheck;
+$('shHand').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); shCheck(); } });
 loadSettings(); newTable(); renderSess(); renderCoach();
 quizNew(); renderQuizScore();
 matchNew(); renderMatchScore();
