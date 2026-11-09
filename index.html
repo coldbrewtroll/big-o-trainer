@@ -583,7 +583,11 @@ button,.btn,.tab,select,input,label{touch-action:manipulation;-webkit-tap-highli
             <li><b>Don't stab just because it was checked to you</b> (−2bb/100). These players check plenty of hands that call.</li>
             <li><b>Fold more on the river</b>: river bets from these players are mostly real (+1.9bb/100). Calling lighter on the turn or river lost 2.5–3.3bb/100.</li>
           </ul></li>
-        <li><b>Preflop, play more hands than a solid reg when the table is soft.</b> Against regs and nits, play a reg's range. With fish and maniacs at the table, open up to about 24 percentile points looser (once roughly half the table is fish or maniacs), because your postflop edge pays for the extra hands. Doing this by table beat a fixed looser range by +12bb/100 at a mixed table and +11bb/100 at a table of regs. From early position mostly limp: in full play-outs limping beat raising at every hand strength. On the button when it's folded to you, raise. Don't 3-bet light (−2.5bb/100), not even against maniacs, and don't raise every hand you open (−3bb/100). Facing a raise, call wider against fish (+3.7bb/100) and a little wider against nits (+1bb/100; tightening up against nits' raises lost 2–4bb/100). Your postflop edge against both pays for it. Going much looser than that stops paying on an average table, but with fish and maniacs in the game the coach will tell you to limp even wider.</li>
+        <li><b>Preflop, first in: limp, don't raise.</b> A 10-million-hand leak scan of a 2/4, 100bb, 6&ndash;7-handed game against mostly solid regulars found open-raising pot was the single biggest leak, in every seat and with every hand strength, even the top 5%. Limping almost every hand (raising about 5% of the time) was worth +10bb/100: it keeps worse hands in multiway pots where your strong hands get paid, while a pot raise mostly folds them out. Against regs and nits, play a reg's range; with fish and maniacs at the table, open up to about 24 percentile points looser. Don't 3-bet light, not even against maniacs. Facing a raise, call wider against fish and a little wider against nits.</li>
+        <li><b>Short stack behind (1&times; the pot or less): get it in.</b> With any hand worth continuing, bet or raise instead of checking or calling (+9.5bb/100). Not at 1.5&times; the pot, though: that lost 5bb/100.</li>
+        <li><b>Nut low draws on the flop: never fold them, and raise them about half the time</b> against a single bet (+4bb/100). A nut flush draw with a low draw also keeps going against a raise (+1.3bb/100).</li>
+        <li><b>River nut low facing a bet: raise.</b> You can't lose your half, and they pay (+1.2bb/100).</li>
+        <li><b>Heads-up on the flop, first to act with a weak hand: bet about 60% of the time.</b> Regulars fold the flop often enough (+1.1bb/100).</li>
         <li><b>What doesn't work:</b> betting or calling because a hand has good equity against <i>random</i> hands (a weak pair in a 5-way pot is behind the hands that call); thin value bets with medium highs heads-up (−2.7bb/100); calling with non-nut low draws; river bluffs with nothing (−1.8bb/100, because these players call with real hands and fold only air); and big bets with medium hands (keep those ½ pot).</li>
       </ul>
 
@@ -1083,7 +1087,7 @@ function runOut(s, hero) {
 // ---------------- OPPONENT MODEL ----------------
 // Bots imitate common human types. The coach computes the best play against exactly this model.
 const TYPES = {
-  aggro:  { name: 'Aggro',  loose: 0.12,  aggr: 0.65, sticky: 0.45, bluff: 0.07, limp: 0.08, aggrPre: 0.90 }, // reg preflop, 12 points looser (paired tests); postflop differs
+  aggro:  { name: 'Aggro',  loose: 0.12,  aggr: 0.65, sticky: 0.45, bluff: 0.07, limp: 0.08, aggrPre: 0.05 }, // first in: limp almost always (leak scan); range set by table (pfTableAware)
   reg:    { name: 'Reg',    loose: 0.00,  aggr: 0.65, sticky: 0.45, bluff: 0.07, limp: 0.08, aggrPre: 0.90 },
   nit:    { name: 'Nit',    loose: -0.10, aggr: 0.45, sticky: 0.30, bluff: 0.03, limp: 0.05, aggrPre: 0.85 },
   fish:   { name: 'Fish',   loose: 0.22,  aggr: 0.20, sticky: 0.75, bluff: 0.03, limp: 0.75, aggrPre: 0.30 },
@@ -1282,7 +1286,8 @@ const AGGRO = { value: 1, valueFreq: 1, semi: 1, semiFreq: 0.95, swing: 1, swing
   flopCallMult: 1, turnCallMult: 1, riverCallMult: 1.2, typeAware: 1, fNit: 2.2, fManiac: 1.2, fFish: 2.0, fReg: 1.6, bluffNit: 1, bluffNitFreq: 0.9, thinFish: 0,
   noBluffFish: 1, noBluffFishAny: 1, noSemiFish: 0, noBluffManiac: 1, lowSpr: 2, lowSprMult: 1, highSpr: 6, highSprMult: 1, lowSprRaise: 1, lowSprRaiseSpr: 2, lowSprHi: 0.8, lowSprBet: 0,
   stab: 0, stabStreet: 2, stabFreq: 0.8, trapManiac: 1, trapFreq: 0.15, pfTableAware: 1, pfLooseMin: 0, pfLooseMax: 0.24, pfWeakFull: 0.45,
-  nlDrawVsNit: 0, semiHUOnly: 0, trapRiver: 1, nitSmallValue: 1, nitValueShare: 0,
+  nlDrawVsNit: 0, semiHUOnly: 0, lowSprRaiseSprFlop: 2, huFlopStab: 1, huFlopStabFreq: 0.6, nlDrawNoFold: 1, nlDrawRaise: 1, nlDrawRaiseFreq: 0.5, nfdLowVsRaise: 1,
+  riverNutLowRaise: 1, riverNutLowRaiseFreq: 0.8, lowSprCommit: 1, commitSpr: 1, trapRiver: 1, nitSmallValue: 1, nitValueShare: 0,
   fishBigMedium: 0, fishMedShare: 0.8, maniacSmallValue: 0, maniacValueShare: 0.3, pfVsManiac: 0, pf3Maniac: 0, pfVsNit: -0.08, pfVsFish: 0.08,
   noRelRaise: 1, noRelBet: 1, relBetFloor: 0, shortBB: 40, shortRelRaise: 1, lowSprHiShort: 0.6, swingDown: 0, swingDownMin: 0.1, swingDownCall: 1.25 };
 function postflopProfile(type, o) {
@@ -1371,6 +1376,8 @@ function aggroProfile(o, base) {
     if (A.riverBluff && river && nAct === 2 && hiQ <= 0.15 && loQ === 0) r = Math.max(r, A.riverBluffFreq);
     if (A.stab && o.checkedTo && !(o.behindTypes || []).length && nAct === 2 && street >= A.stabStreet && (hiQ >= 0.4 || drawQ > 0 || fd || sd >= 2)) r = Math.max(r, A.stabFreq);
     if (A.trapManiac && (o.behindTypes || []).includes('maniac') && value && (!river || A.trapRiver)) r = Math.min(r, A.trapFreq);
+    if (A.huFlopStab && street === 1 && nAct === 2 && hiQ < 0.6 && loQ < 0.8) r = Math.max(r, A.huFlopStabFreq);
+    if (A.lowSprCommit && o.spr != null && o.spr <= A.commitSpr && (hiQ >= 0.4 || loQ > 0 || drawQ > 0 || fd || sd >= 2)) r = Math.max(r, 0.9);
     if (A.lowSprBet && o.spr != null && o.spr <= A.lowSprRaiseSpr && (hiQ >= A.lowSprHi || (loQ === 1 && hiQ >= 0.4) || twoWay)) r = Math.max(r, 0.95);
     const opp = o.oppTypes || [];
     if (A.bluffNit && opp.length && opp.every(t => t === 'nit') && hiQ < 0.6 && loQ < 1) r = Math.max(r, A.bluffNitFreq);
@@ -1383,7 +1390,13 @@ function aggroProfile(o, base) {
   if (A.semiRaise && raises === 1 && twoWay && (drawQ >= 0.6 || !A.semiNeedLo)) r = Math.max(r, A.semiRaiseFreq);
   if (A.huRaise && nAct === 2 && raises === 1 && hiQ >= 0.8) r = Math.max(r, A.huRaiseFreq);
   if (A.raiseStrong && raises === 1 && hiQ >= 0.8) r = Math.max(r, A.raiseStrongFreq);
-  if (A.lowSprRaise && o.spr != null && o.spr <= A.lowSprRaiseSpr && (hiQ >= (o.short ? A.lowSprHiShort : A.lowSprHi) || (loQ === 1 && hiQ >= 0.4) || twoWay)) r = Math.max(r, 0.8);
+  if (A.lowSprRaise && o.spr != null && o.spr <= (street === 1 ? A.lowSprRaiseSprFlop : A.lowSprRaiseSpr) && (hiQ >= (o.short ? A.lowSprHiShort : A.lowSprHi) || (loQ === 1 && hiQ >= 0.4) || twoWay)) r = Math.max(r, 0.8);
+  // round-1 leak fixes (100M-hand scan)
+  if (A.nlDrawNoFold && street === 1 && drawQ >= 0.6) c = 1;
+  if (A.nlDrawRaise && street === 1 && drawQ >= 0.6 && raises === 1) r = Math.max(r, A.nlDrawRaiseFreq);
+  if (A.nfdLowVsRaise && street === 1 && raises >= 2 && fd === 2 && drawQ > 0) c = Math.max(c, 0.95);
+  if (A.riverNutLowRaise && river && loQ === 1) r = Math.max(r, A.riverNutLowRaiseFreq);
+  if (A.lowSprCommit && o.spr != null && o.spr <= A.commitSpr && c >= 0.5) r = Math.max(r, 0.9);
   if (A.nutLoDraw && !river && drawQ >= 0.6 && need <= A.nutLoDrawNeed && !(A.nlDrawVsNit && o.aggType === 'nit' && raises >= 2) && (street === 1 || raises === 1 || (A.nlDrawTurnRaise && (!A.nlTurnRaiseHi || hiQ >= 0.4 || fd)))) c = Math.max(c, 0.9);
   return { r, c };
 }
